@@ -70,7 +70,7 @@ runs:
       if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
       shell: bash
       run: |
-        echo "::error title=⛔ workflow can only be run on the main/master branch!
+        echo "⛔ workflow can only be run on the main/master branch!
         exit 1
 
 
