@@ -67,12 +67,12 @@ runs:
         echo "JAVA_DISTRIBUTION: '${{ env.JAVA_DISTRIBUTION }}'"
 
     - name: Check branch (workflow can run only main/master branch)
-      if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
       shell: bash
       run: |
-        echo "⛔ workflow can only be run on the main/master branch!
-        exit 1
-
+        if [[ "${{ github.ref }}" != "refs/heads/main" && "${{ github.ref }}" != "refs/heads/master" ]]; then
+            echo "⛔ workflow can only be run on the main/master branch!"
+            exit 1
+        fi
 
     - name: Import GPG key
       shell: bash
