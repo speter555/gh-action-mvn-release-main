@@ -58,13 +58,13 @@ runs:
         echo "github.event.ref: ${{ github.event.ref }}"
         echo "github.repository: ${{ github.repository }}"
         echo "github.workspace: ${{ github.workspace }}"
-        echo "NEXUS_USER: '${{ env.NEXUS_USER }}'
-        echo "NEXUS_PASSWORD: '${{ env.NEXUS_PASSWORD }}'
-        echo "GPG_KEY_ID_GITHUB_TECHUSER: '${{ env.GPG_KEY_ID_GITHUB_TECHUSER }}'"
-        echo "TECH_USER_USERNAME: '${{ env.TECH_USER_USERNAME }}'"
-        echo "TECH_USER_EMAIL: '${{ env.TECH_USER_EMAIL }}'"
-        echo "JAVA_VERSION: '${{ env.JAVA_VERSION }}'"
-        echo "JAVA_DISTRIBUTION: '${{ env.JAVA_DISTRIBUTION }}'"
+        echo "NEXUS_USER: '${{ inputs.NEXUS_USER }}'
+        echo "NEXUS_PASSWORD: '${{ inputs.NEXUS_PASSWORD }}'
+        echo "GPG_KEY_ID_GITHUB_TECHUSER: '${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }}'"
+        echo "TECH_USER_USERNAME: '${{ inputs.TECH_USER_USERNAME }}'"
+        echo "TECH_USER_EMAIL: '${{ inputs.TECH_USER_EMAIL }}'"
+        echo "JAVA_VERSION: '${{ inputs.JAVA_VERSION }}'"
+        echo "JAVA_DISTRIBUTION: '${{ inputs.JAVA_DISTRIBUTION }}'"
 
     - name: Check branch (workflow can run only main/master branch)
       shell: bash
@@ -81,23 +81,23 @@ runs:
       # GPG private key, which is exported with armor (start with: '-----BEGIN PGP PRIVATE KEY BLOCK-----') and it is encoded with base64, and stored in secrets
       # the private key is decoded with base64 and it is imported
       run: |
-        echo "${{ env.GPG_SIGNING_KEY_GITHUB_TECHUSER }}" | base64 --decode | gpg --batch --import
+        echo "${{ inputs.GPG_SIGNING_KEY_GITHUB_TECHUSER }}" | base64 --decode | gpg --batch --import
 
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
       with:
         # Private SSH key in PEM format (start with: '-----BEGIN RSA PRIVATE KEY-----')
-        key: ${{ env.SSH_PRIVATE_KEY_GITHUB_TECHUSER }}
+        key: ${{ inputs.SSH_PRIVATE_KEY_GITHUB_TECHUSER }}
         name: id_rsa
-        known_hosts: ${{ env.KNOWN_HOSTS }}
+        known_hosts: ${{ inputs.KNOWN_HOSTS }}
 
 
     - name: Configure GIT for signed commit
       shell: bash
       run: |
-        git config --global user.name "${{ env.TECH_USER_USERNAME }}"
-        git config --global user.email "${{ env.TECH_USER_EMAIL }}"
-        git config --global user.signingkey "${{ env.GPG_KEY_ID_GITHUB_TECHUSER }}"
+        git config --global user.name "${{ inputs.TECH_USER_USERNAME }}"
+        git config --global user.email "${{ inputs.TECH_USER_EMAIL }}"
+        git config --global user.signingkey "${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }}"
         git config --global commit.gpgsign true
         git config --global tag.gpgSign true
 
@@ -110,10 +110,10 @@ runs:
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: ${{ env.JAVA_DISTRIBUTION }}
+        java-version: ${{ inputs.JAVA_VERSION }}
+        distribution: ${{ inputs.JAVA_DISTRIBUTION }}
         cache: 'maven'
-        server-id: ${{ env.ARTIFACT_STORE_SERVER_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
+        server-id: ${{ inputs.ARTIFACT_STORE_SERVER_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
         server-username: USERNAME # env variable for username in deploy
         server-password: TOKEN # env variable for token in deploy
 
@@ -121,7 +121,7 @@ runs:
       id: preset
       shell: bash
       run: |
-        mvn -B -s $GITHUB_WORKSPACE/.github/.m2/settings.xml  release:prepare -DdryRun=true
+        mvn -B -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}}    release:prepare -DdryRun=true
         
         SCM_TAG=`cat release.properties | grep -w "scm.tag" | cut -d'=' -f2`
         echo "SCM_TAG=${SCM_TAG}" 
@@ -159,9 +159,9 @@ runs:
     - name: Maven release PERFORM
       shell: bash
       env:
-        USERNAME: ${{ env.TECH_USER_USERNAME }}
-        TOKEN: ${{ env.GITHUB_TOKEN }}
-      run: mvn -B -s $GITHUB_WORKSPACE/${{ env.SETTINGS_XML_PATH}}  release:perform
+        USERNAME: ${{ inputs.TECH_USER_USERNAME }}
+        TOKEN: ${{ inputs.GITHUB_TOKEN }}
+      run: mvn -B -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}}  release:perform
 
     - name: Checkout main/master
       uses: actions/checkout@v4
@@ -193,7 +193,7 @@ runs:
         commit-message: ${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}
         branch:  ${{steps.preset.outputs.MR_BRANCH_NAME}}
         title: ${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}
-        committer: ${{ env.TECH_USER_USERNAME }} <${{ env.TECH_USER_EMAIL }}>
-        author: ${{ env.TECH_USER_USERNAME }} <${{ env.TECH_USER_EMAIL }}>
-        base: main
+        committer: ${{ inputs.TECH_USER_USERNAME }} <${{ inputs.TECH_USER_EMAIL }}>
+        author: ${{ inputs.TECH_USER_USERNAME }} <${{ inputs.TECH_USER_EMAIL }}>
+        base: ${{ github.ref }}
         delete-branch: true
