@@ -69,7 +69,7 @@ runs:
     - name: Check branch (workflow can run only main/master branch)
       shell: bash
       run: |
-        if [[ "${{ github.ref }}" == "refs/heads/main" && "${{ github.ref }}" == "refs/heads/master" ]]; then
+        if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master" ]]; then
           echo "🚀 Start release..."
         else 
           echo "⛔ workflow can only be run on the main/master branch!"
