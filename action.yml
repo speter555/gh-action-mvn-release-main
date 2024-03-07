@@ -88,6 +88,7 @@ runs:
         # Private SSH key in PEM format (start with: '-----BEGIN RSA PRIVATE KEY-----')
         key: ${{ inputs.SSH_PRIVATE_KEY_GITHUB_TECHUSER }}
         name: id_rsa
+        known_hosts: unnecessary
 
 
     - name: Configure GIT for signed commit
