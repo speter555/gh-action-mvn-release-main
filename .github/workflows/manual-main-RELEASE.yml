@@ -167,6 +167,6 @@ jobs:
       - name: Create Pull Request
         shell: bash
         run: |
-          gh pr create --base ${{ github.ref_name }} --fill-verbose --title ${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}
+          gh pr create --base ${{ github.ref_name }} --fill-verbose --title '${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}'
 
 
