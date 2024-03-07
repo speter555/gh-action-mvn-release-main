@@ -29,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       ###############
       # pre release
       ###############
@@ -141,11 +140,6 @@ jobs:
           git push --set-upstream origin ${{steps.prepare.outputs.MR_BRANCH_NAME}}
           echo "${{ steps.prepare.outputs.MR_BRANCH_NAME }} branch created."
 
-      - name: Checkout bump version branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.prepare.outputs.MR_BRANCH_NAME }}
-
       - name: Create bump MAJOR version branch
         id: bumpbranch
         shell: bash
@@ -167,7 +161,7 @@ jobs:
       - name: Create Pull Request
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         run: |
           gh pr create --base ${{ github.ref_name }} --fill-verbose --title '${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}'
 

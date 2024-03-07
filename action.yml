@@ -172,10 +172,10 @@ runs:
         git push --set-upstream origin ${{ steps.prepare.outputs.MR_BRANCH_NAME }}
         echo "${{ steps.prepare.outputs.MR_BRANCH_NAME }} branch created."
 
-    - name: Checkout bump version branch
-      uses: actions/checkout@v4
-      with:
-        ref: ${{steps.prepare.outputs.MR_BRANCH_NAME}}
+#    - name: Checkout bump version branch
+#      uses: actions/checkout@v4
+#      with:
+#        ref: ${{steps.prepare.outputs.MR_BRANCH_NAME}}
 
     - name: Create bump MAJOR version branch
       id: bumpbranch
