@@ -18,6 +18,8 @@ inputs:
     required: true
   SETTINGS_XML_PATH:
     description: 'settings.xml path in repository, for example: .github/.m2/settings.xml (in repository root, there is a .github folder ...'
+    required: false
+    default: '.github/.m2/settings.xml'
   GPG_KEY_ID_GITHUB_TECHUSER:
     description: 'Gpg key id of technical user'
     required: true
@@ -26,9 +28,7 @@ inputs:
     required: true
   SSH_PRIVATE_KEY_GITHUB_TECHUSER:
     description: 'Ssh private key of technical user in PEM foramat'
-  KNOWN_HOSTS:
-    description: 'Known host at ssh key install'
-    required: false
+    required: true
   TECH_USER_USERNAME:
     description: 'Username of technical user'
     required: true
@@ -48,38 +48,35 @@ inputs:
 ## Usage
 
 ```yaml
-name: Pull Request
+name: Manual Run automatic Maven Release
+
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      comment:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Comment for release'
-        # Default value if no value is explicitly provided
-        default: 'Start release from WEB UI'
-        # Input has to be provided for the workflow to run
-        required: true
+
+env:
+  TECH_USER_USERNAME: 'innovitech-robot'
+  TECH_USER_EMAIL: 'github-techuser@innovitech.hu'
+  JAVA_VERSION: '17'
+  JAVA_DISTRIBUTION: 'temurin'
 
 jobs:
   mvn-release-main:
     runs-on: ubuntu-latest
     steps:
       - name: Release
-        uses: speter555/gh-action-mvn-release-main@main
+        uses: speter555/gh-action-mvn-release-main@gh-action-mvn-release-main-0.5.0
         with:
-          NEXUS_USER: '${{ secrets.NEXUS_USER }}'
-          NEXUS_PASSWORD: '${{ secrets.NEXUS_PASSWORD }}'
+          NEXUS_USER: '${{ env.TECH_USER_USERNAME }}'
+          NEXUS_PASSWORD: '${{ secrets.GITHUB_TOKEN }}'
           ARTIFACT_STORE_SERVER_ID: 'github'
           SETTINGS_XML_PATH: '.github/.m2/settings.xml'
           GPG_KEY_ID_GITHUB_TECHUSER: '${{ secrets.GPG_KEY_ID_GITHUB_TECHUSER }}'
           GPG_SIGNING_KEY_GITHUB_TECHUSER: '${{ secrets.GPG_SIGNING_KEY_GITHUB_TECHUSER }}'
           SSH_PRIVATE_KEY_GITHUB_TECHUSER: '${{ secrets.SSH_PRIVATE_KEY_GITHUB_TECHUSER }}'
-          TECH_USER_USERNAME: 'innovitech-robot'
-          TECH_USER_EMAIL: 'github-techuser@innovitech.hu'
+          TECH_USER_USERNAME: '${{ env.TECH_USER_USERNAME }}'
+          TECH_USER_EMAIL: '${{ env.TECH_USER_EMAIL }}'
           JAVA_VERSION: '17'
           JAVA_DISTRIBUTION: 'temurin'
-
 ```
 
 ## Development
