@@ -137,20 +137,20 @@ jobs:
         id: createBumpBranch
         shell: bash
         run: |
-          git checkout -b ${{steps.prepare.outputs.MR_BRANCH_NAME}} refs/remotes/origin/${{ github.ref_name }}
+          git checkout -b ${{ steps.prepare.outputs.MR_BRANCH_NAME }} refs/remotes/origin/${{ github.ref_name }}
           git push --set-upstream origin ${{steps.prepare.outputs.MR_BRANCH_NAME}}
-          echo "${{steps.prepare.outputs.MR_BRANCH_NAME} branch created."
+          echo "${{ steps.prepare.outputs.MR_BRANCH_NAME }} branch created."
 
       - name: Checkout bump version branch
         uses: actions/checkout@v4
         with:
-          ref: ${{steps.prepare.outputs.MR_BRANCH_NAME}}
+          ref: ${{ steps.prepare.outputs.MR_BRANCH_NAME }}
 
       - name: Create bump MAJOR version branch
         id: bumpbranch
         shell: bash
         run: |
-          NEXT_VERSION=$(echo ${{steps.prepare.outputs.CURRENT_VERSION}} |  awk -F'.' '{print $1"."$2+1"."0}' |  sed s/[.]$//)-SNAPSHOT
+          NEXT_VERSION=$(echo ${{ steps.prepare.outputs.CURRENT_VERSION }} |  awk -F'.' '{print $1"."$2+1"."0}' |  sed s/[.]$//)-SNAPSHOT
           sed -i -r "s/^[#]*\s*VERSION=.*/VERSION=$NEXT_VERSION/" .env
 
           TARGET_BRANCH_NEXT_VERSION=$(sed -rn 's/^VERSION=([^\n]+)$/\1/p' .env)
@@ -159,7 +159,7 @@ jobs:
 
           git add .
           git commit -a -m "${COMMIT_MESSAGE}"
-          git push --atomic origin ${{steps.prepare.outputs.MR_BRANCH_NAME}}
+          git push --atomic origin ${{ steps.prepare.outputs.MR_BRANCH_NAME }}
           echo next version on ${{ github.ref_name }} is $TARGET_BRANCH_NEXT_VERSION
       
 
