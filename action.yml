@@ -187,7 +187,7 @@ runs:
 
     # Ez a step az előzőeket pusholja a branch-be megadott branchre, és az mr-t a base-re írja ki.
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v6.0.1
+      uses: peter-evans/create-pull-request@v4.2.3
       with:
         commit-message: ${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}
         branch:  ${{steps.preset.outputs.MR_BRANCH_NAME}}
@@ -196,3 +196,4 @@ runs:
         author: ${{ inputs.TECH_USER_USERNAME }} <${{ inputs.TECH_USER_EMAIL }}>
         base: ${{ github.ref }}
         delete-branch: true
+        token: ${{ inputs.GITHUB_TOKEN }}
