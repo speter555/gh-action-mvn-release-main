@@ -20,6 +20,7 @@ inputs:
     required: true
   SETTINGS_XML_PATH:
     description: 'settings.xml path in repository, for example: .github/.m2/settings.xml (in repository root, there is a .github folder ...'
+    required: false
     default: '.github/.m2/settings.xml'
   GPG_KEY_ID_GITHUB_TECHUSER:
     description: 'Gpg key id of technical user'
@@ -29,9 +30,11 @@ inputs:
     required: true
   SSH_PRIVATE_KEY_GITHUB_TECHUSER:
     description: 'Ssh private key of technical user in PEM foramat'
+    required: true
   KNOWN_HOSTS:
     description: 'Known host at ssh key install'
     required: false
+    default: '   '
   TECH_USER_USERNAME:
     description: 'Username of technical user'
     required: true
