@@ -81,7 +81,7 @@ jobs:
           echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_OUTPUT
           echo next version will be $NEXT_VERSION
           
-          MR_BRANCH_NAME=feature/${SCM_TAG}-release
+          MR_BRANCH_NAME=feature/${GIT_TAG}-release
           echo "MR_BRANCH_NAME=${MR_BRANCH_NAME}"
           echo "MR_BRANCH_NAME=${MR_BRANCH_NAME}" >> $GITHUB_OUTPUT
 
