@@ -197,5 +197,7 @@ runs:
     # This step creates a pull request between the current branch and the base branch.
     - name: Create Pull Request
       shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
       run: |
         gh pr create --base ${{ github.ref_name }} --fill-verbose --title '${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}'
