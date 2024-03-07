@@ -53,7 +53,7 @@ runs:
       shell: bash
       run: |
         echo "github.event.inputs.comment ${{ github.event.inputs.comment }}"
-        echo "github.ref: ${{ github.ref }}"
+        echo "github.ref_name: ${{ github.ref_name }}"
         echo "github.event.ref: ${{ github.event.ref }}"
         echo "github.repository: ${{ github.repository }}"
         echo "github.workspace: ${{ github.workspace }}"
@@ -68,7 +68,7 @@ runs:
     - name: Check branch (workflow can run only main/master branch)
       shell: bash
       run: |
-        if [[ "${{ github.ref }}" == "refs/heads/main" || "${{ github.ref }}" == "refs/heads/master" ]]; then
+        if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "master" ]]; then
           echo "🚀 Start release..."
         else 
           echo "⛔ workflow can only be run on the main/master branch!"
@@ -79,8 +79,7 @@ runs:
       shell: bash
       # GPG private key, which is exported with armor (start with: '-----BEGIN PGP PRIVATE KEY BLOCK-----') and it is encoded with base64, and stored in secrets
       # the private key is decoded with base64 and it is imported
-      run: |
-        echo "${{ inputs.GPG_SIGNING_KEY_GITHUB_TECHUSER }}" | base64 --decode | gpg --batch --import
+      run: echo "${{ inputs.GPG_SIGNING_KEY_GITHUB_TECHUSER }}" | base64 --decode | gpg --batch --import
 
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
@@ -89,7 +88,6 @@ runs:
         key: ${{ inputs.SSH_PRIVATE_KEY_GITHUB_TECHUSER }}
         name: id_rsa
         known_hosts: unnecessary
-
 
     - name: Configure GIT for signed commit
       shell: bash
@@ -103,8 +101,7 @@ runs:
     - name: Checkout main/master
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.ref }}
-
+        ref: ${{ github.ref_name }}
 
     - name: Set up JDK 17
       uses: actions/setup-java@v4
@@ -117,7 +114,7 @@ runs:
         server-password: TOKEN # env variable for token in deploy
 
     - name: Maven release prepare DryRun and release branch
-      id: preset
+      id: prepare
       shell: bash
       run: |
         mvn -B -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}}    release:prepare -DdryRun=true
@@ -131,24 +128,24 @@ runs:
         RELEASE_BRANCH_NAME=release/${SCM_TAG%.*}.x
         echo "RELEASE_BRANCH_NAME=${RELEASE_BRANCH_NAME}"
         echo "RELEASE_BRANCH_NAME=${RELEASE_BRANCH_NAME}" >> $GITHUB_OUTPUT
-        
         echo new release branch name is ${RELEASE_BRANCH_NAME}
+        
         MR_BRANCH_NAME=feature/${SCM_TAG}-release
         echo "MR_BRANCH_NAME=${MR_BRANCH_NAME}"
         echo "MR_BRANCH_NAME=${MR_BRANCH_NAME}" >> $GITHUB_OUTPUT
-
 
     - name: Create release branch
       id: createreleasebranch
       shell: bash
       run: |
-        git checkout -b ${{steps.preset.outputs.RELEASE_BRANCH_NAME}} main
-        git push --set-upstream origin ${{steps.preset.outputs.RELEASE_BRANCH_NAME}}
+        git checkout -b ${{steps.prepare.outputs.RELEASE_BRANCH_NAME}} refs/remotes/origin/${{ github.ref_name }}
+        git push --set-upstream origin ${{steps.prepare.outputs.RELEASE_BRANCH_NAME}}
+        echo "${{steps.prepare.outputs.RELEASE_BRANCH_NAME}} branch created."
 
     - name: Checkout release branch
       uses: actions/checkout@v4
       with:
-        ref: ${{ steps.preset.outputs.RELEASE_BRANCH_NAME }}
+        ref: ${{ steps.prepare.outputs.RELEASE_BRANCH_NAME }}
 
     - name: Maven release PREPARE
       shell: bash
@@ -165,16 +162,27 @@ runs:
     - name: Checkout main/master
       uses: actions/checkout@v4
       with:
-        ref: ${{ github.ref }}
+        ref: ${{ github.ref_name }}
 
+    - name: Create bump version branch
+      id: createBumpBranch
+      shell: bash
+      run: |
+        git checkout -b ${{steps.prepare.outputs.MR_BRANCH_NAME}} refs/remotes/origin/${{ github.ref_name }}
+        git push --set-upstream origin ${{steps.prepare.outputs.MR_BRANCH_NAME}}
+        echo "${{steps.prepare.outputs.MR_BRANCH_NAME} branch created."
 
-    - name: Bump version branch
+    - name: Checkout bump version branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{steps.prepare.outputs.MR_BRANCH_NAME}}
+
+    - name: Create bump MAJOR version branch
       id: bumpbranch
       shell: bash
       run: |
-        NEXT_MASTER_VERSION=$(echo  ${{steps.preset.outputs.SCM_TAG}} |  awk -F'.' '{print $1"."$2+1"."0}' |  sed s/[.]$//)
+        NEXT_MASTER_VERSION=$(echo  ${{steps.prepare.outputs.SCM_TAG}} |  awk -F'.' '{print $1"."$2+1"."0}' |  sed s/[.]$//)
         TARGET_BRANCH_NEXT_VERSION=$(echo $NEXT_MASTER_VERSION | rev | cut -d '-' -f1 | rev)-SNAPSHOT
-        echo next master branch version is $TARGET_BRANCH_NEXT_VERSION
         mvn -B release:update-versions -DdevelopmentVersion=$TARGET_BRANCH_NEXT_VERSION
         
         COMMIT_MESSAGE="Bump version to $TARGET_BRANCH_NEXT_VERSION"
@@ -183,17 +191,12 @@ runs:
         
         git add .
         git commit -a -m "$COMMIT_MESSAGE"
-        echo next version on main is $TARGET_BRANCH_NEXT_VERSION
+        git push --atomic origin ${{steps.prepare.outputs.MR_BRANCH_NAME}}
+        echo next version on ${{ github.ref_name }} is $TARGET_BRANCH_NEXT_VERSION
 
-    # Ez a step az előzőeket pusholja a branch-be megadott branchre, és az mr-t a base-re írja ki.
+    # This step creates a pull request between the current branch and the base branch.
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v4.2.3
-      with:
-        commit-message: ${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}
-        branch:  ${{steps.preset.outputs.MR_BRANCH_NAME}}
-        title: ${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}
-        committer: ${{ inputs.TECH_USER_USERNAME }} <${{ inputs.TECH_USER_EMAIL }}>
-        author: ${{ inputs.TECH_USER_USERNAME }} <${{ inputs.TECH_USER_EMAIL }}>
-        base: ${{ github.ref }}
-        delete-branch: true
-        token: ${{ inputs.GITHUB_TOKEN }}
+      shell: bash
+      run: |
+        gh pr create --base ${{ github.ref_name }} --fill-verbose --title ${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}
+
