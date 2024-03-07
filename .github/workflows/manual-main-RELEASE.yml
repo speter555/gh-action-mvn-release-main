@@ -161,7 +161,7 @@ jobs:
       - name: Create Pull Request
         shell: bash
         env:
-          GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create --base ${{ github.ref_name }} --fill-verbose --title '${{steps.bumpbranch.outputs.COMMIT_MESSAGE}}'
 
