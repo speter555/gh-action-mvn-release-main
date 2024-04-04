@@ -7,14 +7,8 @@ branding:
   color: 'gray-dark'
 inputs:
   GITHUB_TOKEN:
-    description: 'GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT)'
+    description: 'GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT) fro create PR'
     default: ${{ github.token }}
-  NEXUS_USER:
-    description: 'Nexus user for upload artifacts to nexus'
-    required: true
-  NEXUS_PASSWORD:
-    description: 'Password of nexus user for upload artifacts to nexus'
-    required: true
   ARTIFACT_STORE_SERVER_ID:
     description: 'Value of the distributionManagement/repository/id field of the pom.xml'
     required: true
@@ -60,8 +54,6 @@ runs:
         echo "github.event.ref: ${{ github.event.ref }}"
         echo "github.repository: ${{ github.repository }}"
         echo "github.workspace: ${{ github.workspace }}"
-        echo "NEXUS_USER: '${{ inputs.NEXUS_USER }}'
-        echo "NEXUS_PASSWORD: '${{ inputs.NEXUS_PASSWORD }}'
         echo "GPG_KEY_ID_GITHUB_TECHUSER: '${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }}'"
         echo "TECH_USER_USERNAME: '${{ inputs.TECH_USER_USERNAME }}'"
         echo "TECH_USER_PASSWORD: '${{ inputs.TECH_USER_PASSWORD }}'"

@@ -7,12 +7,6 @@ inputs:
   GITHUB_TOKEN:
     description: 'GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT)'
     default: ${{ github.token }}
-  NEXUS_USER:
-    description: 'Nexus user for upload artifacts to nexus'
-    required: true
-  NEXUS_PASSWORD:
-    description: 'Password of nexus user for upload artifacts to nexus'
-    required: true
   ARTIFACT_STORE_SERVER_ID:
     description: 'Value of the distributionManagement/repository/id field of the pom.xml'
     required: true
@@ -67,17 +61,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Release
-        uses: speter555/gh-action-mvn-release-main@gh-action-mvn-release-main-0.5.0
+        uses: speter555/gh-action-mvn-release-main@v0.16.0
         with:
-          NEXUS_USER: '${{ env.TECH_USER_USERNAME }}'
-          NEXUS_PASSWORD: '${{ secrets.GITHUB_TOKEN }}'
           ARTIFACT_STORE_SERVER_ID: 'github'
           SETTINGS_XML_PATH: '.github/.m2/settings.xml'
           GPG_KEY_ID_GITHUB_TECHUSER: '${{ secrets.GPG_KEY_ID_GITHUB_TECHUSER }}'
           GPG_SIGNING_KEY_GITHUB_TECHUSER: '${{ secrets.GPG_SIGNING_KEY_GITHUB_TECHUSER }}'
           SSH_PRIVATE_KEY_GITHUB_TECHUSER: '${{ secrets.SSH_PRIVATE_KEY_GITHUB_TECHUSER }}'
           TECH_USER_USERNAME: '${{ env.TECH_USER_USERNAME }}'
-          TECH_USER_PASSWORD: '${{ env.TECH_USER_PASSWORD }}'
+          TECH_USER_PASSWORD: '${{ secrets.GITHUB_TOKEN }}'
           TECH_USER_EMAIL: '${{ env.TECH_USER_EMAIL }}'
           JAVA_VERSION: '17'
           JAVA_DISTRIBUTION: 'temurin'
