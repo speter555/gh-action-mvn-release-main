@@ -67,13 +67,13 @@ runs:
       run: |
         if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "master" ]]; then
           echo "🚀 Start ${{ github.ref_name }} release..."
-          SCM_TAG=MAJOR
-          echo "VERSION_TYPE=MAJOR" 
+          VERSION_TYPE=MAJOR
+          echo "VERSION_TYPE=${VERSION_TYPE}" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
         elif [[ "${{ github.ref_name }}" == release/* ]]; then
           echo "🚀 Start ${{ github.ref_name }} release..."
-          SCM_TAG=MINOR
-          echo "VERSION_TYPE=MINOR" 
+          VERSION_TYPE=MINOR
+          echo "VERSION_TYPE=${VERSION_TYPE}" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
         else 
           echo "⛔ workflow can only be run on the main/master branch!"
