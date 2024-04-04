@@ -72,7 +72,7 @@ jobs:
           echo new release branch name is $RELEASE_BRANCH_NAME
           echo "RELEASE_BRANCH_NAME=${RELEASE_BRANCH_NAME}" >> $GITHUB_OUTPUT
 
-          GIT_TAG=${{ env.PROJECT_NAME }}-${CURRENT_VERSION}
+          GIT_TAG=v${CURRENT_VERSION}
           echo "GIT_TAG=${GIT_TAG}" >> $GITHUB_OUTPUT
           echo git tag will be $GIT_TAG
 

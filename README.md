@@ -32,6 +32,9 @@ inputs:
   TECH_USER_USERNAME:
     description: 'Username of technical user'
     required: true
+  TECH_USER_PASSWORD:
+    description: 'Password of technical user'
+    required: true
   TECH_USER_EMAIL:
     description: 'Email address of technical user'
     required: true
@@ -74,6 +77,7 @@ jobs:
           GPG_SIGNING_KEY_GITHUB_TECHUSER: '${{ secrets.GPG_SIGNING_KEY_GITHUB_TECHUSER }}'
           SSH_PRIVATE_KEY_GITHUB_TECHUSER: '${{ secrets.SSH_PRIVATE_KEY_GITHUB_TECHUSER }}'
           TECH_USER_USERNAME: '${{ env.TECH_USER_USERNAME }}'
+          TECH_USER_PASSWORD: '${{ env.TECH_USER_PASSWORD }}'
           TECH_USER_EMAIL: '${{ env.TECH_USER_EMAIL }}'
           JAVA_VERSION: '17'
           JAVA_DISTRIBUTION: 'temurin'
