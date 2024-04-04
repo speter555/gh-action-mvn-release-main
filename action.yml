@@ -65,11 +65,11 @@ runs:
       id: precheck
       shell: bash
       run: |
-        if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "master"  ]]; then
+        if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "master" ]]; then
           echo "🚀 Start ${{ github.ref_name }} release..."
           echo "VERSION_TYPE=MAJOR" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
-        elif [[ contains('"release/", ${{ github.ref_name }}") ]]; then
+        elif [[ contains('release/', ${{ github.ref_name }}) ]]; then
           echo "🚀 Start ${{ github.ref_name }} release..."
           echo "VERSION_TYPE=MINOR" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
