@@ -69,7 +69,7 @@ runs:
           echo "🚀 Start ${{ github.ref_name }} release..."
           echo "VERSION_TYPE=MAJOR" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
-        elif [[ contains('release/', ${{ github.ref_name }}) ]]; then
+        elif [[ "${{ github.ref_name }}" == release/* ]]; then
           echo "🚀 Start ${{ github.ref_name }} release..."
           echo "VERSION_TYPE=MINOR" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
