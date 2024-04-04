@@ -160,14 +160,14 @@ runs:
     - name: Maven release PREPARE
       shell: bash
       run: |
-          mvn -B release:prepare -Dgpg.keyname=${{ input.GPG_KEY_ID_GITHUB_TECHUSER }}
+          mvn -B release:prepare -Dgpg.keyname=${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }}
 
     - name: Maven release PERFORM
       shell: bash
       env:
         USERNAME: ${{ inputs.TECH_USER_USERNAME }}
         PASSWORD: ${{ inputs.TECH_USER_PASSWORD }}
-      run: mvn -B release:perform -Dgpg.keyname=${{ input.GPG_KEY_ID_GITHUB_TECHUSER }} -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}}
+      run: mvn -B release:perform -Dgpg.keyname=${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }} -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}}
 
     - name: Checkout main/master
       if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
