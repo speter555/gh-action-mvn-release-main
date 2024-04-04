@@ -145,7 +145,7 @@ runs:
 
     - name: Create release branch
       id: createreleasebranch
-      if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
+      if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       shell: bash
       run: |
         git checkout -b ${{steps.prepare.outputs.RELEASE_BRANCH_NAME}} refs/remotes/origin/${{ github.ref_name }}
@@ -153,7 +153,7 @@ runs:
         echo "${{steps.prepare.outputs.RELEASE_BRANCH_NAME}} branch created."
 
     - name: Checkout release branch
-      if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
+      if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
         ref: ${{ steps.prepare.outputs.RELEASE_BRANCH_NAME }}
@@ -171,13 +171,13 @@ runs:
       run: mvn -B release:perform -Dgpg.keyname=${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }} -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}}
 
     - name: Checkout main/master
-      if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
+      if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
         ref: ${{ github.ref_name }}
 
     - name: Create bump version branch
-      if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
+      if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       id: createBumpBranch
       shell: bash
       run: |
@@ -186,13 +186,13 @@ runs:
         echo "${{ steps.prepare.outputs.MR_BRANCH_NAME }} branch created."
 
     - name: Checkout bump version branch
-      if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
+      if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
         ref: ${{steps.prepare.outputs.MR_BRANCH_NAME}}
 
     - name: Create bump MAJOR version branch
-      if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
+      if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       id: bumpbranch
       shell: bash
       run: |
@@ -211,7 +211,7 @@ runs:
 
     # This step creates a pull request between the current branch and the base branch.
     - name: Create Pull Request
-      if: ${{steps.precheck.outputs.VERSION_TYPE}} == 'MAJOR'
+      if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
