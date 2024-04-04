@@ -67,10 +67,12 @@ runs:
       run: |
         if [[ "${{ github.ref_name }}" == "main" || "${{ github.ref_name }}" == "master" ]]; then
           echo "🚀 Start ${{ github.ref_name }} release..."
+          SCM_TAG=MAJOR
           echo "VERSION_TYPE=MAJOR" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
         elif [[ "${{ github.ref_name }}" == release/* ]]; then
           echo "🚀 Start ${{ github.ref_name }} release..."
+          SCM_TAG=MINOR
           echo "VERSION_TYPE=MINOR" 
           echo "VERSION_TYPE=${VERSION_TYPE}" >> $GITHUB_OUTPUT
         else 
@@ -121,7 +123,6 @@ runs:
       shell: bash
       run: |
         mvn -B -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}} release:prepare -DdryRun=true
-        
         if [[ "${{steps.precheck.outputs.VERSION_TYPE}}" == "MAJOR" ]]; then
           SCM_TAG=`cat release.properties | grep -w "scm.tag" | cut -d'=' -f2`
           echo "SCM_TAG=${SCM_TAG}" 
