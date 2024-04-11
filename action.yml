@@ -106,6 +106,7 @@ runs:
     - name: Checkout ${{ github.ref_name }}
       uses: actions/checkout@v4
       with:
+        token: ${{ input.GITHUB_TOKEN }}
         ref: ${{ github.ref_name }}
 
     - name: Set up JDK 17
@@ -117,6 +118,7 @@ runs:
         server-id: ${{ inputs.ARTIFACT_STORE_SERVER_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
         server-username: USERNAME # env variable for username in deploy
         server-password: TOKEN # env variable for token in deploy
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Maven release prepare DryRun and release branch
       id: prepare
@@ -156,6 +158,7 @@ runs:
       if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
+        token: ${{ input.GITHUB_TOKEN }}
         ref: ${{ steps.prepare.outputs.RELEASE_BRANCH_NAME }}
 
     - name: Maven release PREPARE
@@ -174,6 +177,7 @@ runs:
       if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
+        token: ${{ input.GITHUB_TOKEN }}
         ref: ${{ github.ref_name }}
 
     - name: Create bump version branch
@@ -189,6 +193,7 @@ runs:
       if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
+        token: ${{ input.GITHUB_TOKEN }}
         ref: ${{steps.prepare.outputs.MR_BRANCH_NAME}}
 
     - name: Create bump MAJOR version branch
