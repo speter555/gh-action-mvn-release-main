@@ -106,7 +106,7 @@ runs:
     - name: Checkout ${{ github.ref_name }}
       uses: actions/checkout@v4
       with:
-        token: ${{ input.GITHUB_TOKEN }}
+        token: ${{ inputs.GITHUB_TOKEN }}
         ref: ${{ github.ref_name }}
 
     - name: Set up JDK 17
@@ -158,7 +158,7 @@ runs:
       if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
-        token: ${{ input.GITHUB_TOKEN }}
+        token: ${{ inputs.GITHUB_TOKEN }}
         ref: ${{ steps.prepare.outputs.RELEASE_BRANCH_NAME }}
 
     - name: Maven release PREPARE
@@ -177,7 +177,7 @@ runs:
       if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
-        token: ${{ input.GITHUB_TOKEN }}
+        token: ${{ inputs.GITHUB_TOKEN }}
         ref: ${{ github.ref_name }}
 
     - name: Create bump version branch
@@ -193,7 +193,7 @@ runs:
       if: ${{ steps.precheck.outputs.VERSION_TYPE == 'MAJOR' }}
       uses: actions/checkout@v4
       with:
-        token: ${{ input.GITHUB_TOKEN }}
+        token: ${{ inputs.GITHUB_TOKEN }}
         ref: ${{steps.prepare.outputs.MR_BRANCH_NAME}}
 
     - name: Create bump MAJOR version branch
