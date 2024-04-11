@@ -9,6 +9,12 @@ inputs:
   GITHUB_TOKEN:
     description: 'GITHUB_TOKEN or a `repo` scoped Personal Access Token (PAT) fro create PR'
     default: ${{ github.token }}
+  NEXUS_USER:
+    description: 'Nexus user for upload artifacts to nexus'
+    required: true
+  NEXUS_PASSWORD:
+    description: 'Password of nexus user for upload artifacts to nexus'
+    required: true
   ARTIFACT_STORE_SERVER_ID:
     description: 'Value of the distributionManagement/repository/id field of the pom.xml'
     required: true
@@ -27,9 +33,6 @@ inputs:
     required: true
   TECH_USER_USERNAME:
     description: 'Username of technical user'
-    required: true
-  TECH_USER_PASSWORD:
-    description: 'Password of technical user'
     required: true
   TECH_USER_EMAIL:
     description: 'Email address of technical user'
@@ -56,7 +59,6 @@ runs:
         echo "github.workspace: ${{ github.workspace }}"
         echo "GPG_KEY_ID_GITHUB_TECHUSER: '${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }}'"
         echo "TECH_USER_USERNAME: '${{ inputs.TECH_USER_USERNAME }}'"
-        echo "TECH_USER_PASSWORD: '${{ inputs.TECH_USER_PASSWORD }}'"
         echo "TECH_USER_EMAIL: '${{ inputs.TECH_USER_EMAIL }}'"
         echo "JAVA_VERSION: '${{ inputs.JAVA_VERSION }}'"
         echo "JAVA_DISTRIBUTION: '${{ inputs.JAVA_DISTRIBUTION }}'"
@@ -169,8 +171,8 @@ runs:
     - name: Maven release PERFORM
       shell: bash
       env:
-        USERNAME: ${{ inputs.TECH_USER_USERNAME }}
-        PASSWORD: ${{ inputs.TECH_USER_PASSWORD }}
+        USERNAME: ${{ inputs.NEXUS_USER }}
+        PASSWORD: ${{ inputs.NEXUS_PASSWORD }}
       run: mvn -B release:perform -Dgpg.keyname=${{ inputs.GPG_KEY_ID_GITHUB_TECHUSER }} -s $GITHUB_WORKSPACE/${{ inputs.SETTINGS_XML_PATH}}
 
     - name: Checkout main/master
