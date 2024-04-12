@@ -118,8 +118,6 @@ runs:
         distribution: ${{ inputs.JAVA_DISTRIBUTION }}
         cache: 'maven'
         server-id: ${{ inputs.ARTIFACT_STORE_SERVER_ID }} # Value of the distributionManagement/repository/id field of the pom.xml
-        server-username: USERNAME # env variable for username in deploy
-        server-password: TOKEN # env variable for token in deploy
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Maven release prepare DryRun and release branch
