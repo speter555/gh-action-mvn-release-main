@@ -1,7 +1,7 @@
 # Copyright (c) AUTHORS
 # SPDX-License-Identifier: Apache2
 name: 'Maven-manual-release-main'
-description: 'Maven manual release from main branch (major version release)'
+description: 'Maven manual release'
 branding:
   icon: 'arrow-right-circle'
   color: 'gray-dark'
@@ -111,7 +111,7 @@ runs:
         token: ${{ inputs.GITHUB_TOKEN }}
         ref: ${{ github.ref_name }}
 
-    - name: Set up JDK 17
+    - name: Set up JDK version
       uses: actions/setup-java@v4
       with:
         java-version: ${{ inputs.JAVA_VERSION }}
