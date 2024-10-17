@@ -1,4 +1,4 @@
-# GitHub Action for maven release from main branch
+# GitHub Action for maven release
 
 ## Input
 
@@ -89,9 +89,23 @@ The workflow action is composite workflow, that mean the workflow is in the root
 
 ### Testing
 
-For test the workflow changes, you can use another project, where you can use this repository in workflow step. Like there: 
+For test the workflow changes, you can use another project, where you can use this repository in workflow step. Like there: https://github.com/speter555/test
 
 ### Release
 
-Release is create an own release workflow, which handle tagging, branching etc.
-Now release workflow can only main release! 
+Running the release will create its own release workflow, which handle the following automatic steps:
+- started from main/master branch (e.g. `1.1.0-SNAPSHOT`): 
+  - print variables
+  - import GPG key and configure GIT for signed commit
+  - create and push new release branch (with version `1.1.0-SNAPSHOT`)
+  - perform maven release, tagging (`1.1.0`)
+  - bump version for release branch (`1.1.1-SNAPSHOT`)
+  - bump version for main/master and create new pull request (`1.2.0-SNAPSHOT`)
+- started from release branch (e.g. `1.2.1-SNAPSHOT`):
+  - print variables
+  - import GPG key and configure GIT for signed commit
+  - perform maven release, tagging (`1.2.1`)
+  - bump version for release branch (`1.2.2-SNAPSHOT`)
+
+Limitation: if you want to release MAJOR version (e.g. `1.0.0 -> 2.0.0`) first you have to update the version number manually in pom.xml before running the release workflow
+ 
