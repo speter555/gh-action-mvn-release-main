@@ -57,8 +57,8 @@ on:
   workflow_dispatch:
 
 env:
-  TECH_USER_USERNAME: 'innovitech-robot'
-  TECH_USER_EMAIL: 'github-techuser@innovitech.hu'
+  TECH_USER_USERNAME: 'speter555-robot'
+  TECH_USER_EMAIL: 'szabo.peter.89.me@gmail.com'
   JAVA_VERSION: '17'
   JAVA_DISTRIBUTION: 'temurin'
 
